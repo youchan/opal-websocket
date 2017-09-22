@@ -1,7 +1,12 @@
+require 'opal'
 require "opal/websocket/version"
 
+if RUBY_ENGINE == 'opal'
+
 module Opal
-  module Websocket
-    # Your code goes here...
+  class WebSocket
+
   end
+end
+
 end
