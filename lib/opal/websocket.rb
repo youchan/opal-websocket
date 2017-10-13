@@ -1,8 +1,10 @@
 require 'opal'
-require "opal/array_buffer"
-require "opal/websocket/version"
 
 if RUBY_ENGINE == 'opal'
+
+require 'native'
+require 'opal/array_buffer'
+require 'opal/websocket/version'
 
 module Opal
   class WebSocket
@@ -18,6 +20,7 @@ module Opal
     end
 
     def binary_type=(type)
+      @binary_type = type
       case type
       when :arraybuffer
         `self.native.binaryType = 'arraybuffer'`
@@ -29,7 +32,16 @@ module Opal
     end
 
     def onmessage
-      add_event_listener('message') {|event| yield MessageEvent.new(event) if self.open? }
+      add_event_listener('message') do |event|
+        next unless self.open?
+
+        case @binary_type
+        when :arraybuffer
+          yield ArrayMessageEvent.new(event)
+        else
+          yield MessageEvent.new(event)
+        end
+      end
     end
 
     def onopen
@@ -60,12 +72,21 @@ module Opal
       native_reader :ports
 
       def data
-        ArrayBuffer.new(`new Uint8Array(self.native.data)`)
+        `self.native.data`
       end
 
       def last_event_id
         `self.native.lastEventId`
       end
     end
+
+    class ArrayMessageEvent < MessageEvent
+      def data
+        ArrayBuffer.new(`new Uint8Array(self.native.data)`)
+      end
+
+    end
   end
+end
+
 end
