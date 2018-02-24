@@ -1,10 +1,12 @@
 require 'opal'
+require 'opal/websocket/version'
 
-if RUBY_ENGINE == 'opal'
+if RUBY_ENGINE != 'opal'
+  Opal.append_path File.expand_path('../..', __FILE__).untaint
+else
 
 require 'native'
 require 'opal/array_buffer'
-require 'opal/websocket/version'
 
 module Opal
   class WebSocket
