@@ -1,14 +1,8 @@
 require 'opal/websocket/version'
 
 if RUBY_ENGINE != 'opal'
-  # Now if we are NOT running inside of opal, set things up so opal can find
-  # the files. The whole thing is rescued in case the opal gem is not available.
-  # This would happen if the gem is being used server side ONLY.
-  begin
-    require 'opal'
-    Opal.append_path File.expand_path('../..', __FILE__).untaint
-  rescue LoadError
-  end
+  require 'opal'
+  Opal.append_path File.expand_path('../..', __FILE__).untaint
 else
 
 require 'native'
